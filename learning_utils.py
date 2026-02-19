@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from io import BytesIO
 from pathlib import Path
@@ -45,13 +44,19 @@ def _build_model(num_classes: int) -> nn.Module:
 
 
 def _expand_classifier_if_needed(model: nn.Module, old_classes: List[str], new_classes: List[str]) -> nn.Module:
-    if len(old_classes) == len(new_classes):
+    if old_classes == new_classes:
         return model
 
     old_fc: nn.Linear = model.fc
     new_fc = nn.Linear(old_fc.in_features, len(new_classes))
 
     with torch.no_grad():
+        old_to_index = {name: idx for idx, name in enumerate(old_classes)}
+        for new_idx, class_name in enumerate(new_classes):
+            if class_name in old_to_index:
+                old_idx = old_to_index[class_name]
+                new_fc.weight[new_idx] = old_fc.weight[old_idx]
+                new_fc.bias[new_idx] = old_fc.bias[old_idx]
         new_fc.weight[: len(old_classes)] = old_fc.weight
         new_fc.bias[: len(old_classes)] = old_fc.bias
 
@@ -70,6 +75,13 @@ def fine_tune_from_dataset(
     dataset = datasets.ImageFolder(data_dir, transform=DEFAULT_TRANSFORM)
     class_names = dataset.classes
 
+    model_file = Path(model_path)
+    if not model_file.exists():
+        raise FileNotFoundError(
+            f"Model checkpoint '{model_path}' was not found. Run train_script.py first."
+        )
+
+    checkpoint = torch.load(model_file, map_location="cpu")
     checkpoint = torch.load(model_path, map_location="cpu")
     old_classes = checkpoint["class_names"]
     model = _build_model(len(old_classes))
