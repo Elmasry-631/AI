@@ -1,0 +1,4 @@
+img,output,timestamp
+,"{""label"": null, ""confidences"": null}",2026-02-18 19:40:42.988380
+.gradio/flagged/img/6386bc07f1cb3f3e820f/download2.jpeg,"{""label"": ""dogs"", ""confidences"": [{""label"": ""dogs"", ""confidence"": 0.958092212677002}, {""label"": ""wild"", ""confidence"": 0.03892803564667702}, {""label"": ""cats"", ""confidence"": 0.0029797626193612814}]}",2026-02-18 19:40:53.304878
+.gradio/flagged/img/5c121c86fd33b6bd14ca/WhatsApp Image 2026-02-15 at 5.30.01 PM.jpeg,"{""label"": ""cats"", ""confidences"": [{""label"": ""cats"", ""confidence"": 0.8739922046661377}, {""label"": ""dogs"", ""confidence"": 0.11665882170200348}, {""label"": ""wild"", ""confidence"": 0.009348873980343342}]}",2026-02-18 20:42:48.738704
