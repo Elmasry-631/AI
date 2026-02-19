@@ -57,6 +57,8 @@ def _expand_classifier_if_needed(model: nn.Module, old_classes: List[str], new_c
                 old_idx = old_to_index[class_name]
                 new_fc.weight[new_idx] = old_fc.weight[old_idx]
                 new_fc.bias[new_idx] = old_fc.bias[old_idx]
+        new_fc.weight[: len(old_classes)] = old_fc.weight
+        new_fc.bias[: len(old_classes)] = old_fc.bias
 
     model.fc = new_fc
     return model
@@ -80,6 +82,7 @@ def fine_tune_from_dataset(
         )
 
     checkpoint = torch.load(model_file, map_location="cpu")
+    checkpoint = torch.load(model_path, map_location="cpu")
     old_classes = checkpoint["class_names"]
     model = _build_model(len(old_classes))
     model.load_state_dict(checkpoint["model_state_dict"])

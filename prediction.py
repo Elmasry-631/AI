@@ -22,13 +22,7 @@ def load_model():
     return model, class_names
 
 
-model = None
-class_names = []
-
-try:
-    model, class_names = load_model()
-except FileNotFoundError:
-    pass
+model, class_names = load_model()
 
 
 transform = transforms.Compose([
@@ -40,9 +34,6 @@ transform = transforms.Compose([
 
 
 def predict(img: Image.Image):
-    if model is None or not class_names:
-        return {"error": 1.0}
-
     img_t = transform(img).unsqueeze(0)
     with torch.no_grad():
         outputs = model(img_t)
@@ -57,11 +48,7 @@ def teach_model(img: Image.Image, label: str):
         return "Please provide both image and label."
 
     saved_path = save_labeled_image(img, label)
-    try:
-        stats = fine_tune_from_dataset(MODEL_PATH, data_dir="data", epochs=1)
-    except FileNotFoundError as exc:
-        return f"Saved: {saved_path}\n{exc}"
-
+    stats = fine_tune_from_dataset(MODEL_PATH, data_dir="data", epochs=1)
     model, class_names = load_model()
 
     return (
